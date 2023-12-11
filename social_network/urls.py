@@ -19,5 +19,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/user/", include("user.urls", namespace="user"))
+    path("api/user/", include("user.urls", namespace="user")),
+    path("api/tweetbook/", include("tweetogram.urls", namespace="tweetogram")),
+
+    path("__debug__/", include("debug_toolbar.urls"))
 ]
