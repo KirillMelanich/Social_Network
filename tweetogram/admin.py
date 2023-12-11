@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from tweetogram.models import Post
+
+admin.site.register(Post)
