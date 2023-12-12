@@ -1,4 +1,5 @@
 from django.core.exceptions import PermissionDenied
+from django.db import models
 from rest_framework import viewsets
 from .models import Post, Like, Dislike, Analytics, UserActivity
 from .serializers import PostSerializer, AnalyticsSerializer, UserActivitySerializer
@@ -64,23 +65,20 @@ class AnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AnalyticsSerializer
 
     def list(self, request, *args, **kwargs):
-        date_from = request.query_params.get("date_from")
-        date_to = request.query_params.get("date_to")
+        date_from = request.query_params.get('date_from')
+        date_to = request.query_params.get('date_to')
 
         # Perform the analytics calculation here
-        likes_count = Like.objects.filter(
-            created_at__range=[date_from, date_to]
-        ).count()
-        dislikes_count = Dislike.objects.filter(
-            created_at__range=[date_from, date_to]
-        ).count()
+        analytics_data = Like.objects.filter(created_at__range=[date_from, date_to]).aggregate(
+            likes_count=models.Count('id'),
+            dislikes_count=models.Value(0, output_field=models.IntegerField())
+        )
 
-        analytics_data = {
-            "date_from": date_from,
-            "date_to": date_to,
-            "likes_count": likes_count,
-            "dislikes_count": dislikes_count,
-        }
+        dislikes_count = Dislike.objects.filter(created_at__range=[date_from, date_to]).aggregate(
+            dislikes_count=models.Count('id')
+        )
+
+        analytics_data['dislikes_count'] = dislikes_count['dislikes_count']
 
         serializer = self.get_serializer(data=analytics_data)
         serializer.is_valid(raise_exception=True)
@@ -90,4 +88,4 @@ class AnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
 
 class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserActivitySerializer
-    queryset = UserActivity.objects.all()
+    queryset = UserActivity.objects.select_related("user").all()
