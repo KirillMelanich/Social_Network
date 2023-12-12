@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Max, F
 
 
 class Post(models.Model):
@@ -38,3 +39,34 @@ class Dislike(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     post = models.ForeignKey("Post", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Analytics(models.Model):
+    date_from = models.DateField()
+    date_to = models.DateField()
+    likes_count = models.PositiveIntegerField(default=0)
+    dislikes_count = models.PositiveIntegerField(default=0)
+
+
+class UserActivity(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    last_activity = models.DateTimeField(null=True, blank=True)
+
+    def get_last_activity(self):
+        last_post_created_at = Post.objects.filter(author=self.user).aggregate(
+            last_post_created_at=Max("created_at")
+        )["last_post_created_at"]
+        last_like_created_at = Like.objects.filter(author=self.user).aggregate(
+            last_like_created_at=Max("created_at")
+        )["last_like_created_at"]
+        last_dislike_created_at = Dislike.objects.filter(author=self.user).aggregate(
+            last_dislike_created_at=Max("created_at")
+        )["last_dislike_created_at"]
+
+        last_action = max(
+            last_post_created_at, last_like_created_at, last_dislike_created_at
+        )
+
+        self.last_activity = last_action
+
+        self.save()

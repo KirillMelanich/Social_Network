@@ -1,7 +1,7 @@
 from django.core.exceptions import PermissionDenied
 from rest_framework import viewsets
-from .models import Post, Like, Dislike
-from .serializers import PostSerializer
+from .models import Post, Like, Dislike, Analytics, UserActivity
+from .serializers import PostSerializer, AnalyticsSerializer, UserActivitySerializer
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -57,3 +57,37 @@ class PostViewSet(viewsets.ModelViewSet):
 
         # Perform the update
         serializer.save()
+
+
+class AnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Analytics.objects.all()
+    serializer_class = AnalyticsSerializer
+
+    def list(self, request, *args, **kwargs):
+        date_from = request.query_params.get("date_from")
+        date_to = request.query_params.get("date_to")
+
+        # Perform the analytics calculation here
+        likes_count = Like.objects.filter(
+            created_at__range=[date_from, date_to]
+        ).count()
+        dislikes_count = Dislike.objects.filter(
+            created_at__range=[date_from, date_to]
+        ).count()
+
+        analytics_data = {
+            "date_from": date_from,
+            "date_to": date_to,
+            "likes_count": likes_count,
+            "dislikes_count": dislikes_count,
+        }
+
+        serializer = self.get_serializer(data=analytics_data)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.data)
+
+
+class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = UserActivitySerializer
+    queryset = UserActivity.objects.all()
