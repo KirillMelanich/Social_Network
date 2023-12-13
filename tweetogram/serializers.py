@@ -28,7 +28,7 @@ class AnalyticsSerializer(serializers.ModelSerializer):
 
 class UserActivitySerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(source="user.id", read_only=True)
-    last_login = serializers.CharField(source="user.last_login", read_only=True)
+    last_login = serializers.DateTimeField(source="user.last_login", read_only=True)
 
     class Meta:
         model = UserActivity

@@ -1,6 +1,8 @@
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+
 from .models import Post, Like, Dislike, Analytics, UserActivity
 from .serializers import PostSerializer, AnalyticsSerializer, UserActivitySerializer
 from rest_framework import status
@@ -11,6 +13,7 @@ from rest_framework.response import Response
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = (IsAuthenticated, )
 
     @action(detail=True, methods=["post"])
     def like(self, request, pk=None):
@@ -63,6 +66,7 @@ class PostViewSet(viewsets.ModelViewSet):
 class AnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Analytics.objects.all()
     serializer_class = AnalyticsSerializer
+    permission_classes = (IsAuthenticated,)
 
     def list(self, request, *args, **kwargs):
         date_from = request.query_params.get('date_from')
@@ -89,3 +93,4 @@ class AnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
 class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserActivitySerializer
     queryset = UserActivity.objects.select_related("user").all()
+    permission_classes = (IsAuthenticated,)
