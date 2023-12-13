@@ -1,5 +1,7 @@
+from datetime import timedelta
+
 from rest_framework import serializers
-from .models import Post, Analytics, UserActivity
+from .models import Post, Analytics, UserActivity, Like, Dislike
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -24,6 +26,26 @@ class AnalyticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Analytics
         fields = ("date_from", "date_to", "likes_count", "dislikes_count")
+        read_only_fields = ("likes_count", "dislikes_count")
+
+    def create(self, validated_data):
+        date_from = validated_data.get("date_from")
+        date_to = validated_data.get("date_to")
+
+        # Perform the analytics calculation here. day_to is included to calculations
+        likes_count = Like.objects.filter(
+            created_at__range=[date_from, date_to + timedelta(days=1)]
+        ).count()
+        dislikes_count = Dislike.objects.filter(
+            created_at__range=[date_from, date_to + timedelta(days=1)]
+        ).count()
+
+        # Add the calculated counts to the validated data
+        validated_data["likes_count"] = likes_count
+        validated_data["dislikes_count"] = dislikes_count
+
+        # Create the Analytics instance
+        return Analytics.objects.create(**validated_data)
 
 
 class UserActivitySerializer(serializers.ModelSerializer):

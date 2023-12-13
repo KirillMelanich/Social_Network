@@ -1,5 +1,6 @@
 from django.core.exceptions import PermissionDenied
 from django.db import models
+from django.utils.timezone import datetime, timedelta, make_aware
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
@@ -13,7 +14,7 @@ from rest_framework.response import Response
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     @action(detail=True, methods=["post"])
     def like(self, request, pk=None):
@@ -63,31 +64,13 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save()
 
 
-class AnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Analytics.objects.all()
+class AnalyticsViewSet(viewsets.ModelViewSet):
+    queryset = Analytics.objects.none()  # An empty queryset as we only handle creation
     serializer_class = AnalyticsSerializer
     permission_classes = (IsAuthenticated,)
 
-    def list(self, request, *args, **kwargs):
-        date_from = request.query_params.get('date_from')
-        date_to = request.query_params.get('date_to')
-
-        # Perform the analytics calculation here
-        analytics_data = Like.objects.filter(created_at__range=[date_from, date_to]).aggregate(
-            likes_count=models.Count('id'),
-            dislikes_count=models.Value(0, output_field=models.IntegerField())
-        )
-
-        dislikes_count = Dislike.objects.filter(created_at__range=[date_from, date_to]).aggregate(
-            dislikes_count=models.Count('id')
-        )
-
-        analytics_data['dislikes_count'] = dislikes_count['dislikes_count']
-
-        serializer = self.get_serializer(data=analytics_data)
-        serializer.is_valid(raise_exception=True)
-
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Analytics.objects.none()
 
 
 class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
