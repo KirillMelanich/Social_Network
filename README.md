@@ -9,6 +9,7 @@ This API allows an authorized user to create posts, like and dislike them. Also 
 - User can delete or update only his own post
 - User activity calculates automatically
 - Bot generates posts and likes randomly according to config rules
+- You can see the number of likes given for the period you are interested in by endpoint activity. Just enter the start and end date of the period into the form and click post
 
 ## Technologies used
 - Django
