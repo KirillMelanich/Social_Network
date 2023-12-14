@@ -1,6 +1,6 @@
 ### Kirill Melanich test task for STARNAVI
 # Social Network
-This API allows an authorized user to create posts, like and dislike them. Also it has bot_script that imitates users activity according to the rules defined in config.py file 
+This API allows an authorized user to create posts, like and dislike them. Also, it has bot_script that imitates users activity according to the rules defined in config.py file 
 
 ### Main rules
 
