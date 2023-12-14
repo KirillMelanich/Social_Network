@@ -32,5 +32,12 @@ def update_user_activity_on_like_or_dislike_create(sender, instance, created, **
 def update_user_activity_on_token_refresh(sender, instance, created, **kwargs):
     if created:
         user_activity, created = UserActivity.objects.get_or_create(user=instance.user)
+        user_activity.update_last_token_request()
+
+
+@receiver(post_save, sender=RefreshToken)
+def update_user_activity_on_token_refresh(sender, instance, created, **kwargs):
+    if not created:
+        user_activity, created = UserActivity.objects.get_or_create(user=instance.user)
         user_activity.last_token_refresh = timezone.now()
         user_activity.save()

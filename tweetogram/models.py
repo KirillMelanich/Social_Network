@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.db.models import Max
+from django.utils import timezone
 
 
 class Post(models.Model):
@@ -52,6 +53,7 @@ class UserActivity(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     last_activity = models.DateTimeField(null=True, blank=True)
     last_token_refresh = models.DateTimeField(null=True, blank=True)
+    registration_time = models.DateTimeField(auto_now_add=True)
 
     def get_last_activity(self):
         last_post_created_at = Post.objects.filter(author=self.user).aggregate(
@@ -71,3 +73,12 @@ class UserActivity(models.Model):
         self.last_activity = last_action
 
         self.save()
+
+    def update_last_token_redresh(self):
+        self.last_token_refresh = timezone.now()
+        self.save()
+
+    def get_registration_time(self):
+        return self.registration_time
+
+

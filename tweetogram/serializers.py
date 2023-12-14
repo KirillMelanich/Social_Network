@@ -52,7 +52,9 @@ class AnalyticsSerializer(serializers.ModelSerializer):
 
 class UserActivitySerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(source="user.id", read_only=True)
+    last_token_refresh = serializers.DateTimeField(read_only=True)
+    registration_time = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = UserActivity
-        fields = ("user_id", "last_activity", "last_token_refresh")
+        fields = ("user_id", "last_activity", "registration_time", "last_token_refresh")
