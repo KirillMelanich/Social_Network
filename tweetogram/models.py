@@ -74,10 +74,6 @@ class UserActivity(models.Model):
 
         self.save()
 
-    def update_last_token_redresh(self):
-        self.last_token_refresh = timezone.now()
-        self.save()
-
     def get_registration_time(self):
         return self.registration_time
 
