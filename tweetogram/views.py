@@ -1,6 +1,4 @@
 from django.core.exceptions import PermissionDenied
-from django.db import models
-from django.utils.timezone import datetime, timedelta, make_aware
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 

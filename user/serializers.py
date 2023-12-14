@@ -5,8 +5,8 @@ from rest_framework import serializers
 class UserCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ("id", "full_name", "email",  "last_login")
-        read_only_fields = ("last_login", )
+        fields = ("id", "full_name", "email", "last_login")
+        read_only_fields = ("last_login",)
 
 
 class UserSerializer(serializers.ModelSerializer):

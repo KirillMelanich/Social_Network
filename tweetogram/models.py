@@ -51,6 +51,7 @@ class Analytics(models.Model):
 class UserActivity(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     last_activity = models.DateTimeField(null=True, blank=True)
+    last_token_refresh = models.DateTimeField(null=True, blank=True)
 
     def get_last_activity(self):
         last_post_created_at = Post.objects.filter(author=self.user).aggregate(

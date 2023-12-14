@@ -1,6 +1,8 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from rest_framework import serializers
+from rest_framework_jwt.settings import api_settings
+
 from .models import Post, Analytics, UserActivity, Like, Dislike
 
 
@@ -50,8 +52,7 @@ class AnalyticsSerializer(serializers.ModelSerializer):
 
 class UserActivitySerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(source="user.id", read_only=True)
-    last_login = serializers.DateTimeField(source="user.last_login", read_only=True)
 
     class Meta:
         model = UserActivity
-        fields = ("user_id", "last_login", "last_activity")
+        fields = ("user_id", "last_activity", "last_token_refresh")
