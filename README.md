@@ -31,24 +31,28 @@ This API allows an authorized user to create posts, like and dislike them. Also,
    venv\Scripts\activate (on Windows)
    source venv/bin/activate (on macOS)
 
-3. Use `.env_sample` file as a template and create `.env` file with your settings
+3. Install dependencies:
+   ```shell
+    pip install -r requirements.txt
+
+4. Use `.env_sample` file as a template and create `.env` file with your settings
     . Don't forget to change your database settings for your local database
 
-4. Run migrations
+5. Run migrations
    ```shell
    python manage.py makemigrations
    python manage.py migrate
 
-5. Create superuser
+6. Create superuser
    ```shell
    python manage.py createsuperuser
  
-6. Run server:
+7. Run server:
    ```shell
    python manage.py runserver
    
-7. Run bot_script
+8. Run bot_script
     ```shell
    python bot_script.py
    
-8. Enjoy Social Network! 
+9. Enjoy Social Network! 
